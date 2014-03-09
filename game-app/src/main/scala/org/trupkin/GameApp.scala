@@ -14,7 +14,7 @@ import org.flagship.console.Size
 // TODO: fix right grab for vertical layout
 object GameApp extends App {
   val size = Size(120, 42)
-  val term = new SwingTerminal(size, "Rama Terminal")
+  val term = new SwingTerminal(size, "Brace for Impact")
   val window = new MainWindow(size)
 
   val gui = new GUIConsole(term, window)

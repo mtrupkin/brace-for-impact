@@ -35,10 +35,12 @@ class GUIConsole(val terminal: Terminal, val window: Window) {
 
     for (key <- terminal.key) {
       window.keyPressed(key)
+      terminal.key = None
     }
     if (terminal.key != consoleKey) {
       consoleKey = terminal.key
       for (key <- consoleKey) {
+        //window.keyPressed(key)
       }
     } else {
       for (key <- consoleKey) {

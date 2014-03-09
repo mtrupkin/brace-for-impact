@@ -21,6 +21,7 @@ import org.flagship.console.{Size, Point}
 trait Terminal {
   val terminalSize: Size
   var closed = false
+  //var keyQueue: List[ConsoleKey] = Nil
   var key: Option[ConsoleKey] = None
   var mouse: Point = Point.Origin
 
@@ -45,11 +46,13 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
   terminalCanvas.addKeyListener(new KeyAdapter {
     override def keyPressed(e: KeyEvent) {
       val modifiers = new ConsoleKeyModifier(e.isShiftDown, e.isAltDown, e.isControlDown)
-      key = Some(new ConsoleKey( Key(e.getKeyCode),modifiers ))
+      key = Some(new ConsoleKey( Key(e.getKeyCode),modifiers )) //keyQueue ++ Some(new ConsoleKey( Key(e.getKeyCode),modifiers ))
+      println("key pressed")
     }
 
     override def keyReleased(e: KeyEvent) {
       key = None
+      println("key released")
     }
   })
 

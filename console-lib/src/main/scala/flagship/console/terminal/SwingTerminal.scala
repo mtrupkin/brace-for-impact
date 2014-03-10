@@ -47,12 +47,12 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
     override def keyPressed(e: KeyEvent) {
       val modifiers = new ConsoleKeyModifier(e.isShiftDown, e.isAltDown, e.isControlDown)
       key = Some(new ConsoleKey( Key(e.getKeyCode),modifiers )) //keyQueue ++ Some(new ConsoleKey( Key(e.getKeyCode),modifiers ))
-      println("key pressed")
+//      println("key pressed")
     }
 
     override def keyReleased(e: KeyEvent) {
       key = None
-      println("key released")
+//      println("key released")
     }
   })
 

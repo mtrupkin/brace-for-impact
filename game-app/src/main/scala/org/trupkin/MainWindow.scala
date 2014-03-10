@@ -1,11 +1,9 @@
 package org.trupkin
 
-import org.flagship.console.Size
 import flagship.console.widget.{Border, Window}
-import model.{TestMap, Player}
+import model.{ShipPlan, Player}
 import flagship.console.control.Composite
 import flagship.console.layout.{Layout, LayoutData, LayoutManager}
-import flagship.console.layout.LayoutData._
 import org.flagship.console.Size
 import scala.Some
 import view.MapView
@@ -20,28 +18,28 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
   val player = new Player
 
   val windowPanel = new Composite()
-  val mainPanel = new Window(Size(70, 40)) with Border
-  val mapPanel = new Composite(LayoutManager.VERTICAL) with Border
-  val insideMapPanel = new Composite() with Border
-  val outsideMapPanel = new Composite() with Border
+  val mainPanel = new Window(Size(80, 40)) with Border
+  //val mapPanel = new Composite(LayoutManager.VERTICAL) with Border
+  //val insideMapPanel = new Composite() with Border
+  //val outsideMapPanel = new Composite() with Border
   val detailPanel = new Composite(LayoutManager.VERTICAL) with Border
 
   import LayoutData._
 
   windowPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
   //mainPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  mapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  insideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  outsideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  detailPanel.controlLayout = Layout(bottom = GRAB, right = SNAP)
+  //mapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+  //insideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+  //outsideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+  detailPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
 
-  mainPanel.addControl(new MapView(new TestMap, player.position) with Border)
+  mainPanel.addControl(new MapView(ShipPlan.ship0, player.position) with Border)
 
-  mapPanel.addControl(insideMapPanel)
-  mapPanel.addControl(outsideMapPanel)
+  //mapPanel.addControl(insideMapPanel)
+  //mapPanel.addControl(outsideMapPanel)
 
   windowPanel.addControl(mainPanel)
-  windowPanel.addControl(mapPanel)
+  //windowPanel.addControl(mapPanel)
   windowPanel.addControl(detailPanel)
 
 

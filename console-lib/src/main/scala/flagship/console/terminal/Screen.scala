@@ -61,6 +61,10 @@ class Screen(size: Size) {
     this(x, y) = ScreenCharacter(c, fg, bg)
   }
 
+  def write(x: Int, y: Int, c: Char, fg0: Color, bg0: Color) {
+    this(x, y) = ScreenCharacter(c, fg0, bg0)
+  }
+
   def write(s: String) {
     this(cursor.x, cursor.y) = ScreenCharacter(s.charAt(0), fg, bg)
   }

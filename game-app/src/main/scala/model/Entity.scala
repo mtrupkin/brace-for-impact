@@ -18,6 +18,7 @@ object Entity {
 }
 
 class Player() extends BaseEntity("Player") {
+  def setPosition(p: Point) { position = p.copy() }
 
   def up() = {position = position.move(Point.Up)}
   def down() = {position = position.move(Point.Down)}

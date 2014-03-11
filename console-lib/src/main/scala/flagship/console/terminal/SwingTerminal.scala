@@ -168,6 +168,8 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
         screen.foreach(drawScreenCharacter)
 
         def drawScreenCharacter(p: Point, s: ScreenCharacter) {
+
+          g2.setColor(toAwtColor(s.fg))
           drawString(p, s.c.toString)
         }
 
@@ -198,6 +200,33 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
       }
     }
   }
+
+  def toAwtColor(c: Color): java.awt.Color = {
+    c match {
+      case Color.Black => java.awt.Color.BLACK
+      case Color.White => java.awt.Color.WHITE
+      case Color.Yellow => java.awt.Color.YELLOW
+      case Color.Red => java.awt.Color.RED
+      case Color.Green => java.awt.Color.GREEN
+      case Color.Blue => java.awt.Color.BLUE
+      case Color.LightYellow => AwtColor.LightYellow
+      case Color.LightGreen => AwtColor.LightGreen
+      case Color.LightBlue => AwtColor.LightBlue
+      case Color.LightRed => AwtColor.LightRed
+      case Color.LightGrey => AwtColor.LightGrey
+      case _ =>  ???
+    }
+  }
+}
+
+object AwtColor {
+  val LightYellow = getAwtColor(Color.LightYellow)
+  val LightRed = getAwtColor(Color.LightRed)
+  val LightBlue = getAwtColor(Color.LightBlue)
+  val LightGreen = getAwtColor(Color.LightGreen)
+  val LightGrey = getAwtColor(Color.LightGrey)
+
+  def getAwtColor(c: Color): java.awt.Color = new java.awt.Color(c.r, c.g, c.b)
 }
 
 

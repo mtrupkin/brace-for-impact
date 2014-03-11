@@ -11,6 +11,10 @@ case class Point(x: Int, y: Int) {
   }
 }
 
+object PointImplicits {
+  implicit def TupleToPoint(t: (Int, Int)) = new Point(t._1, t._2)
+}
+
 object Point {
   val Origin: Point = new Point(0, 0)
   val Up: Point = new Point(0, -1)

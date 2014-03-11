@@ -1,7 +1,7 @@
 package view
 
 import flagship.console.control.Control
-import flagship.console.terminal.Screen
+import flagship.console.terminal.{Color, Screen}
 import model.TileMap
 import org.flagship.console.{Point, Size}
 
@@ -9,7 +9,7 @@ import org.flagship.console.{Point, Size}
  * User: mtrupkin
  * Date: 12/17/13
  */
-class MapView(val map: TileMap, origin: => Point, val viewPort: Size = Size(78, 31)) extends Control {
+class MapView(val map: TileMap, player: => Point, val viewPort: Size = Size(78, 31)) extends Control {
   override def minSize: Size = viewPort
   //var origin = Point(0, 0)
 
@@ -21,8 +21,11 @@ class MapView(val map: TileMap, origin: => Point, val viewPort: Size = Size(78, 
       x <- 0 until viewPort.width
     ) {
       //screen.write(x, y, map(x + origin.x - w2, y  + origin.y - h2).char)
-      screen.write(x, y, map(x, y).char)
+      val tile = map(x, y)
+      screen.write(x, y, tile.char, tile.fg, tile.bg)
     }
+
+    screen.write(player.x, player.y, '@', Color.Yellow, Color.Black)
   }
 
 }

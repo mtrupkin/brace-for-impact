@@ -25,6 +25,9 @@ class MapView(val map: TileMap, player: => Point, val viewPort: Size = Size(78, 
       screen.write(x, y, tile.char, tile.fg, tile.bg)
     }
 
+
+    map.entities().foreach( e => screen.write(e.position.x, e.position.y, 'S', Color.Red, Color.Black) )
+
     screen.write(player.x, player.y, '@', Color.Yellow, Color.Black)
   }
 

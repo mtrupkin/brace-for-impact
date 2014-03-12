@@ -45,7 +45,7 @@ class Screen(size: Size) {
     for {
       i <- 0 until size.width
       j <- 0 until size.height
-      if (this(i, j) != blank)
+      //if (this(i, j) != blank)
     } f(Point(i, j), this(i, j))
   }
 

@@ -27,6 +27,7 @@ trait Terminal {
 
   def addMouseAdapter(mouseAdapter: MouseAdapter)
   def flush(screen: Screen)
+  def close()
 }
 
 class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: String = "Swing Terminal") extends Frame with Terminal {
@@ -78,6 +79,11 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
   override def closeOperation( ) {
     closed = true
     visible = false
+    dispose()
+  }
+
+  override def close() {
+    super.close()
     dispose()
   }
 

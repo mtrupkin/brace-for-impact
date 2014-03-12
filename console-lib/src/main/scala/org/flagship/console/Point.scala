@@ -13,6 +13,7 @@ case class Point(x: Int, y: Int) {
 
 object PointImplicits {
   implicit def TupleToPoint(t: (Int, Int)) = new Point(t._1, t._2)
+  implicit def PointToTuple(p: Point) = (p.x, p.y)
 }
 
 object Point {

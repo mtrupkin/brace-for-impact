@@ -6,8 +6,11 @@ import flagship.console.control.Composite
 import flagship.console.layout.{Layout, LayoutData, LayoutManager}
 import org.flagship.console.{Point, Size}
 import scala.Some
-import view.MapView
+import view.{ShipStatusView, MapView}
 import flagship.console.input.ConsoleKey
+import flagship.console.layout.LayoutData._
+import org.flagship.console.Size
+import scala.Some
 
 /**
  * Created by mtrupkin on 3/8/14.
@@ -22,36 +25,38 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
   val startPos = ship.startingPosition().getOrElse(throw new IllegalStateException("starting position not found"))
   player.setPosition(startPos)
 
-  //val windowPanel = new Composite()
-  //val mainPanel = new Window(Size(80, 40)) with Border
+  val mainPanel = new Composite(LayoutManager.VERTICAL)
+  mainPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+
+  val topPanel = new Composite
+  val bottomPanel = new Composite with Border
+  bottomPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+
   val mapPanel = new MapView(ship, player.position) with Border
-  //val mapPanel = new Composite(LayoutManager.VERTICAL) with Border
-  //val insideMapPanel = new Composite() with Border
-  //val outsideMapPanel = new Composite() with Border
-  val detailPanel = new Composite(LayoutManager.VERTICAL) with Border
+  val detailPanel = new Composite(LayoutManager.VERTICAL)
+  val shipStatusPanel = new ShipStatusView(ship) with Border {
+    override def minSize: Size = Size(40, 5)
+  }
+  val playerPanel = new Composite(LayoutManager.VERTICAL) with Border
+
 
   import LayoutData._
 
-  //windowPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  //mainPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  //mapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  //insideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
-  //outsideMapPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
   detailPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
+  shipStatusPanel.controlLayout = Layout(right = GRAB)
+  playerPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
 
+  detailPanel.addControl(shipStatusPanel)
+  detailPanel.addControl(playerPanel)
 
-  //mainPanel.addControl(new MapView(ship, player.position) with Border)
+  topPanel.addControl(mapPanel)
+  topPanel.addControl(detailPanel)
 
-  //mapPanel.addControl(insideMapPanel)
-  //mapPanel.addControl(outsideMapPanel)
+  mainPanel.addControl(topPanel)
+  mainPanel.addControl(bottomPanel)
 
-  //windowPanel.addControl(mainPanel)
-  //windowPanel.addControl(mapPanel)
-  //windowPanel.addControl(detailPanel)
+  addControl(mainPanel)
 
-
-  addControl(mapPanel)
-  addControl(detailPanel)
   layout()
 
   override def update(elapsedTime: Int) {
@@ -62,11 +67,20 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
     import scala.swing.event.Key._
     val k = key.keyValue
     k match {
-      case W => player.up
-      case A => player.left
-      case S => player.down
-      case D => player.right
+      case W | Up => move(Point.Up)
+      case A | Left => move(Point.Left)
+      case S | Down => move(Point.Down)
+      case D | Right => move(Point.Right)
+      case Escape => closed = true
       case _ =>
+    }
+  }
+
+  def move(dir: Point) {
+    val testPos = player.position.move(dir)
+    if ( ship(testPos).move ) {
+      val newPos = player.move(dir)
+      ship(newPos).activate(ship, player)
     }
   }
 }

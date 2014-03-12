@@ -8,6 +8,8 @@ import org.flagship.console.{Point, Size}
  * Date: 7/6/13
  */
 class Window(val size: Size, val title: Option[String] = None) extends Composite {
+  var closed = false
+
   override def minSize: Size = size
   def layout() {
     layout(size)

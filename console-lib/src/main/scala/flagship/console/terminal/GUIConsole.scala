@@ -14,7 +14,8 @@ class GUIConsole(val terminal: Terminal, val window: Window) {
   val refreshRate = (1f / framesPerSecond) * 1000
   val screen = Screen(terminal.terminalSize)
 
-  def completed(): Boolean = terminal.closed
+
+  def completed(): Boolean = (window.closed || terminal.closed)
 
   var consoleKey: Option[ConsoleKey] = None
 
@@ -63,5 +64,7 @@ class GUIConsole(val terminal: Terminal, val window: Window) {
         render
       }
     }
+
+    terminal.close()
   }
 }

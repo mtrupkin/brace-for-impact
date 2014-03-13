@@ -13,6 +13,9 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
   val moduleWidth = 11
   val moduleHeight = 6
 
+  val widthInTiles = numModuleX * moduleWidth
+  val heightInTiles = numModuleY * moduleHeight
+
   val bulkheadTile = new SimpleTile('x')
   val emptySpaceTile = new SimpleTile(' ')
   val airlockTile = new SimpleTile('X')
@@ -20,16 +23,13 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
   val exteriorTile = new SimpleTile('#')
 
   var entities : List[Entity] = List.empty
+  def liveEntities(): List[Entity] = entities.filter(_.alive)
 
 
-  def startingPosition(): Option[(Int, Int)] = {
-    getModule(ModuleType.Helm) match {
-      case m :: ms => m._1.find('*') match {
-        case p :: ps => Some(shipCoords(m._2, p))
-        case Nil => None
-      }
-      case Nil => None
-    }
+  def startingPosition(): (Int, Int) = {
+    val (m, pos) = getModule(ModuleType.Helm).filter(_._1.primary).head
+    val cell = ShipUtils.randomModuleCell(m)
+    shipCoords(pos, cell)
   }
 
   def getModules(): List[(ModulePlan, (Int, Int))] = {
@@ -67,6 +67,13 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
       } else {
         emptySpaceTile
       }
+    }
+  }
+
+  def entity(x: Int, y: Int): Option[Entity] = {
+    liveEntities.filter( _.position == Point(x, y)) match {
+      case e::es => Some(e)
+      case Nil => None
     }
   }
 
@@ -146,6 +153,22 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
     } else {
       false
     }
+  }
+}
+
+object ShipUtils {
+  def randomModule(ship: ShipPlan): (ModulePlan, (Int, Int)) = {
+    val modules = ship.getModules()
+    val n = Rnd.roll(modules.size)
+    modules(n)
+  }
+
+  def randomModuleCell(module: ModulePlan): (Int, Int) = {
+    val cells = module.getCells().filter( p=> p._1.move)
+
+    val n = Rnd.roll(cells.size)
+    val cell = cells(n)
+    cell._2
   }
 }
 

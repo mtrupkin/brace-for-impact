@@ -15,7 +15,7 @@ object Color {
   val Red = Color(255, 0, 0)
   val Green = Color(0, 255, 0)
   val LightYellow = Color(126, 126, 0)
-  val LightBlue = Color(0, 0, 126)
+  val LightBlue = Color(21, 105, 199)
   val LightRed = Color(126, 0, 0)
   val LightGreen = Color(0, 126, 0)
 }

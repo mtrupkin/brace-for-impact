@@ -2,6 +2,7 @@ package model
 
 import org.flagship.console.Point
 import scala.util.Random
+import flagship.console.terminal.Color
 
 /**
  * Created by mtrupkin on 3/11/14.
@@ -11,7 +12,7 @@ object Encounter {
 
   def createEncounter(ship: ShipPlan) {
     val pos = getRandomPosition(ship)
-    val e = new BaseEntity("Spider", pos)
+    val e = new BaseEntity("Spider", pos, char = 'S', color = Color.Red)
     ship.entities = e :: ship.entities
   }
 
@@ -20,22 +21,6 @@ object Encounter {
     val cell = ShipUtils.randomModuleCell(module)
     ship.shipCoords(modulePos, cell)
 
-  }
-}
-
-object ShipUtils {
-  def randomModule(ship: ShipPlan): (ModulePlan, (Int, Int)) = {
-    val modules = ship.getModules()
-    val n = Rnd.roll(modules.size)
-    modules(n)
-  }
-
-  def randomModuleCell(module: ModulePlan): (Int, Int) = {
-    val cells = module.getCells().filter( p=> p._1.move)
-
-    val n = Rnd.roll(cells.size)
-    val cell = cells(n)
-    cell._2
   }
 }
 

@@ -2,7 +2,7 @@ package view
 
 import flagship.console.control.Control
 import flagship.console.terminal.{Color, Screen}
-import model.TileMap
+import model.{Entity, TileMap}
 import org.flagship.console.{Point, Size}
 
 /**
@@ -26,9 +26,14 @@ class MapView(val map: TileMap, player: => Point, val viewPort: Size = Size(78, 
     }
 
 
-    map.entities().foreach( e => screen.write(e.position.x, e.position.y, 'S', Color.Red, Color.Black) )
+    //map.entities().foreach( e => screen.write(e.position.x, e.position.y, e.char, e.color, Color.Black) )
+    map.entities().filter(!_.alive).foreach( renderEntity(screen, _) )
+    map.entities().filter(_.alive).foreach( renderEntity(screen, _) )
 
     screen.write(player.x, player.y, '@', Color.Yellow, Color.Black)
   }
 
+  def renderEntity(screen: Screen, e: Entity) {
+    screen.write(e.position.x, e.position.y, e.char, e.color, Color.Black)
+  }
 }

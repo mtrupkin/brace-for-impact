@@ -12,7 +12,7 @@ case class SkillType(name: String, color: Color)
 
 object SkillType {
   val Command = SkillType("Command", Color.LightYellow)
-  val Science = SkillType("Science", Color.Blue)
+  val Science = SkillType("Science", Color.LightBlue)
   val Engineer = SkillType("Engineer", Color.Green)
   val Weapons = SkillType("Weapons", Color.Red)
   val None = SkillType("None", Color.LightGrey)
@@ -32,7 +32,6 @@ object ModuleType {
   val Sensors = ModuleType("Sensors", Science)
 
   def helmActivate(s: ShipPlan, e: Entity) = {
-    println("helm activate")
     Encounter.createEncounter(s)
   }
 
@@ -74,8 +73,6 @@ class ModulePlan(val module: ModuleType, val tiles: Array[Array[Tile]], val prim
 
 }
 
-
-
 object ModulePlan {
   def fromPlan(module: ModuleType, primary: Boolean, plan: String): ModulePlan = {
     val tiles = ofDim[Tile](10, 5)
@@ -93,9 +90,9 @@ object ModulePlan {
 
   def toTile(c: Char, module: ModuleType): Tile = {
     c match {
-      case '.' =>  new SimpleTile(c, true, Color.LightGrey, Color.Black)
-      case '*' | '#' =>  new SimpleTile(c, true, module.skillType.color, Color.Black, module.activate)
-      case _ =>  new SimpleTile(c, false, module.skillType.color, Color.Black)
+      case '.' =>  new SimpleTile(' ', true, false, Color.LightGrey, Color.Black)
+      case '#' =>  new SimpleTile('+', false, true, module.skillType.color, Color.Black, module.activate)
+      case _ =>  new SimpleTile('#', false, false, module.skillType.color, Color.Black)
     }
   }
 }
@@ -104,7 +101,7 @@ object Modules {
   val Helm0 =
     """xxxx..xxxx
       |x#.....xxx
-      |........*x
+      |........#x
       |x#.....xxx
       |xxxx..xxxx""".stripMargin
 
@@ -123,10 +120,10 @@ object Modules {
       |xxxx..xxxx""".stripMargin
 
   val Cargo0 =
-    """xx.......x
-      |.........x
+    """xx......xx
+      |x........x
       |..........
-      |.........x
+      |x........x
       |xx......xx""".stripMargin
 
   val HyperDrive0 =
@@ -134,7 +131,7 @@ object Modules {
       |.........x
       |..........
       |.........x
-      |xx......xx""".stripMargin
+      |xx.......x""".stripMargin
 
   val PowerPlant0 =
     """xx.......x
@@ -146,7 +143,7 @@ object Modules {
   val Phasers0 =
     """..........
       |..xxxx....
-      |...*xxxxxx
+      |...#xxxxxx
       |..xxxx....
       |..........""".stripMargin
 

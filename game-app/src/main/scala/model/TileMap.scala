@@ -12,13 +12,18 @@ import flagship.console.terminal.Color
 //type TileArray = Array[Array[Tile]]
 
 trait TileMap {
+  val widthInTiles: Int
+  val heightInTiles: Int
+
   def apply(x: Int, y: Int): Tile
   def entities(): List[Entity]
+  def entity(x: Int, y: Int): Option[Entity]
 }
 
 trait Tile {
-  def move: Boolean
   def char: Char
+  def move: Boolean
+  def activation: Boolean
   def fg: Color
   def bg: Color
   def activate(shipPlan: ShipPlan, entity: Entity): Unit
@@ -27,6 +32,7 @@ trait Tile {
 class SimpleTile(
   val char: Char,
   val move: Boolean = false,
+  val activation: Boolean = false,
   val fg: Color = Color.White,
   val bg: Color = Color.Black,
   val onActivate: ((ShipPlan, Entity) => Unit) = (s: ShipPlan, e: Entity) => {} ) extends Tile {

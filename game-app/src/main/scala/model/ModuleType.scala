@@ -27,9 +27,11 @@ object ModuleType {
   val Helm = ModuleType("Helm", Command, helmActivate)
   val Cargo = ModuleType("Cargo", None)
   val PowerPlant = ModuleType("PowerPlant", Engineer)
-  val HyperDrive = ModuleType("HyperDrive", Science)
+  val HyperDrive = ModuleType("HyperDrive", Engineer)
   val Phasers = ModuleType("Phasers", Weapons, phaserActivate)
   val Sensors = ModuleType("Sensors", Science)
+  val Shields = ModuleType("Shields", Science)
+  val Transporter = ModuleType("Transporter", Science)
 
   def helmActivate(s: ShipPlan, e: Entity) = {
     Encounter.createEncounter(s)
@@ -105,6 +107,48 @@ object Modules {
       |x#.....xxx
       |xxxx..xxxx""".stripMargin
 
+  val Cargo0 =
+    """xx......xx
+      |x........x
+      |..........
+      |x........x
+      |xx......xx""".stripMargin
+
+  val HyperDrive0 =
+    """xx........
+      |xx#.xxxx..
+      |xxxxxxx#..
+      |xx#.xxxx..
+      |xx........""".stripMargin
+
+  val PowerPlant0 =
+    """xxxx..xxxx
+      |xxx#..#xxx
+      |..........
+      |xxx#..#xxx
+      |xxxx..xxxx""".stripMargin
+
+  val Phasers0 =
+    """..........
+      |..xxxx....
+      |...#xxxxxx
+      |..xxxx....
+      |..........""".stripMargin
+
+  val Transporter0 =
+    """..........
+      |..xx.xxx..
+      |.....#xx..
+      |..xx.xxx..
+      |..........""".stripMargin
+
+  val Shields0 =
+    """......xxxx
+      |..xx...#xx
+      |..xxxxxxxx
+      |..xx...#xx
+      |......xxxx""".stripMargin
+
   val helm1 =
     """xxxx..xxxx
       |x#......xx
@@ -118,34 +162,6 @@ object Modules {
       |.......#xx
       |xx#.....xx
       |xxxx..xxxx""".stripMargin
-
-  val Cargo0 =
-    """xx......xx
-      |x........x
-      |..........
-      |x........x
-      |xx......xx""".stripMargin
-
-  val HyperDrive0 =
-    """xx.......x
-      |.........x
-      |..........
-      |.........x
-      |xx.......x""".stripMargin
-
-  val PowerPlant0 =
-    """xx.......x
-      |.........x
-      |..........
-      |.........x
-      |xx......xx""".stripMargin
-
-  val Phasers0 =
-    """..........
-      |..xxxx....
-      |...#xxxxxx
-      |..xxxx....
-      |..........""".stripMargin
 
   val cargo1 =
     """..........

@@ -14,7 +14,8 @@ trait Entity {
   def color: Color
   def stamina: Int
   def movement: Int
-  def attack(value: Int)
+  def attack(other: Entity)
+  def damage(value: Int)
   def move(p: Point): Point
   def alive: Boolean
   def setPosition(p: Point)
@@ -32,11 +33,22 @@ class BaseEntity(
 
   var movement: Int = totalMovement
 
-  def attack(value: Int) {
+  def attack(other: Entity) {
+    other.damage(1)
+    movement = -1
+  }
+
+  def damage(value: Int) {
     stamina = stamina - value
     if (!alive) {
       char = '.'
+      color = Color.Red
     }
+  }
+
+  def activate(ship:ShipPlan, p: Point) {
+    ship(p.x, p.y).activate(ship, this)
+    movement = -1
   }
 
   def alive: Boolean = (stamina > 0)
@@ -54,7 +66,7 @@ object Entity {
   def None: Entity = new BaseEntity("None")
 }
 
-class Player() extends BaseEntity("Player", stamina = 6) {
+class Player() extends BaseEntity("Player", stamina = 6, color = Color.Yellow) {
   def up() = {position = position.move(Point.Up)}
   def down() = {position = position.move(Point.Down)}
   def left() = {position = position.move(Point.Left)}

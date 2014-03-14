@@ -22,8 +22,12 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
   val doorTile = new SimpleTile('.', true)
   val exteriorTile = new SimpleTile('#')
 
+  var hull = 6
+  var shields = 6
+  def destroyed = hull <= 0
+
   var entities : List[Entity] = List.empty
-  def liveEntities(): List[Entity] = entities.filter(_.alive)
+  def liveEntities: List[Entity] = entities.filter(_.alive)
 
 
   def startingPosition(): (Int, Int) = {
@@ -194,6 +198,8 @@ object ShipPlan {
       case 'C' => Some(ModulePlan.fromPlan(ModuleType.Cargo, Character.isUpperCase(c), Modules.Cargo0))
       case 'D' => Some(ModulePlan.fromPlan(ModuleType.HyperDrive, Character.isUpperCase(c), Modules.HyperDrive0))
       case 'P' => Some(ModulePlan.fromPlan(ModuleType.PowerPlant, Character.isUpperCase(c), Modules.PowerPlant0))
+      case 'T' => Some(ModulePlan.fromPlan(ModuleType.Transporter, Character.isUpperCase(c), Modules.Transporter0))
+      case 'S' => Some(ModulePlan.fromPlan(ModuleType.Shields, Character.isUpperCase(c), Modules.Shields0))
       case 'W' => Some(ModulePlan.fromPlan(ModuleType.Phasers, Character.isUpperCase(c), Modules.Phasers0))
 
       case _ => None
@@ -201,7 +207,7 @@ object ShipPlan {
   }
 
   val ship0 = fromPlan(ShipPlans.shipPlan0)
-  val ship1 = fromPlan(ShipPlans.shipPlan1)
+  def ship1 = fromPlan(ShipPlans.shipPlan1)
   val ship2 = fromPlan(ShipPlans.shipPlan2)
 }
 
@@ -214,11 +220,11 @@ object ShipPlans {
       |.......""".stripMargin
 
   val shipPlan1 =
-    """..w....
-      |.dc....
-      |..cPCH.
-      |.dc....
-      |..w....""".stripMargin
+    """.w.....
+      |.ds....
+      |..cPtH.
+      |.ds....
+      |.w.....""".stripMargin
 
   val shipPlan2 =
     """www.w.w

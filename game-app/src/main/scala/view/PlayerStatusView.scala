@@ -1,13 +1,14 @@
 package view
 
-import model.{Player, ShipPlan}
+import model.{GameSequence, Player, ShipPlan}
 import flagship.console.control.Control
 import flagship.console.terminal.Screen
 
 /**
  * Created by mtrupkin on 3/12/14.
  */
-class PlayerStatusView(val player: Player) extends Control {
+class PlayerStatusView(val game: GameSequence) extends Control {
+    import game._
 
     def render(screen: Screen) {
       screen.clear()

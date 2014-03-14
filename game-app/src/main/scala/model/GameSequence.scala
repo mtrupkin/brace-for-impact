@@ -9,13 +9,26 @@ import org.trupkin.MainWindow
 /**
  * Created by mtrupkin on 3/13/14.
  */
+case class ShipStatus(name: String)
+object ShipStatus {
+  val Green = ShipStatus("Green")
+  val Red = ShipStatus("Red")
+  val Yellow = ShipStatus("Yellow")
+}
+
 class GameSequence(
   val player: Player,
   val ship: ShipPlan) {
   import PhaseStepType._
   import org.flagship.console.PointImplicits._
 
-  def gameOver = !player.alive || ship.destroyed
+  var messages: List[String] = Nil
+
+  def shipStatus: ShipStatus = {
+    if (ship.liveEntities.isEmpty) ShipStatus.Green else ShipStatus.Red
+  }
+
+  def gameOverCondition = !player.alive || ship.destroyed
 
   var phase: Int = 0
   var step: PhaseStepType = PlayerAction
@@ -25,6 +38,7 @@ class GameSequence(
   val pathFinder = new AStarPathFinder(new TileBasedMapWrapper(ship), 100, false, new ManhattanHeuristic(1))
 
   def move(dir: Point) {
+    println("move")
     if (step == PlayerAction) {
       val testPos = player.position.move(dir)
 
@@ -33,9 +47,10 @@ class GameSequence(
           case Some(e) => player.attack(e)
           case None => player.move(dir)
         }
-      } else if( ship(testPos).activation ) {
-        player.activate(ship, testPos)
-
+      } else {
+        for (module <- ship(testPos).activation) {
+          player.activate(this, module, testPos)
+        }
       }
 
       if (player.movement < 0) {
@@ -55,15 +70,27 @@ class GameSequence(
   }
 
   def autoSteps(): Boolean = {
+    println("autoSteps")
     step match {
       case AllyAction => step = EnemyAction; true
-      case EndPhase => if (gameOver) {step = EndGame; false } else { step = PlayerAction; true }
+      case EndPhase => if (gameOverCondition) {gameOver(); false } else { step = PlayerAction; true }
       case PlayerAction => false
       case EnemyAction => if( freeEnemies.isEmpty ) { step = EndPhase; true } else false
     }
   }
 
+  def gameOver() {
+    step = EndGame
+    addMessage("Game Over")
+    addMessage("Press Enter to Restart")
+  }
+
+  def addMessage(message:String) {
+    messages = message::messages
+  }
+
   def enemiesStep() {
+    println("enemiesStep")
     freeEnemies match {
       case e::es => enemyAction(e)
       case Nil => {
@@ -74,6 +101,8 @@ class GameSequence(
   }
 
 
+
+
   def enemyAction(e: Entity) {
     val path = pathFinder.findPath(null, e.position.x, e.position.y, player.position.x, player.position.y )
 
@@ -82,8 +111,14 @@ class GameSequence(
       val testPos = Point(step.getX, step.getY)
       if (player.position == testPos) {
         e.attack(player)
+      } else if(ship.isOccupied(testPos.x, testPos.y)) {
+        if (e.movement > 1) {
+          e.movePosition(testPos)
+        } else {
+          e.endMovement()
+        }
       } else {
-        e.movePosition(Point(step.getX, step.getY))
+        e.movePosition(testPos)
       }
     }
   }

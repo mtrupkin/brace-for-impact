@@ -18,7 +18,13 @@ object SkillType {
   val None = SkillType("None", Color.LightGrey)
 }
 
-case class ModuleType(name: String, skillType: SkillType, activate: ((ShipPlan, Entity) => Unit) = (s: ShipPlan, e: Entity) => {})
+
+
+case class ModuleType(
+  name: String,
+  skillType: SkillType,
+  activate: ((GameSequence, ModuleType, Entity) => Unit) =
+    (g: GameSequence, m:ModuleType, e: Entity) => {g.addMessage(s"${m.name} activated")})
 
 object ModuleType {
   import SkillType._
@@ -33,13 +39,17 @@ object ModuleType {
   val Shields = ModuleType("Shields", Science)
   val Transporter = ModuleType("Transporter", Science)
 
-  def helmActivate(s: ShipPlan, e: Entity) = {
-    Encounter.createEncounter(s)
+  def helmActivate(game: GameSequence,m:ModuleType, e: Entity) = {
+    if (game.shipStatus == ShipStatus.Green) {
+      Encounter.createEncounter(game)
+    } else {
+      game.addMessage("Cannot activate helm during RED ALERT.")
+    }
   }
 
-  def phaserActivate(s: ShipPlan, e: Entity) = {
+  def phaserActivate(game: GameSequence, m:ModuleType,e: Entity) = {
     println("phaser activate")
-    s.entities = Nil
+    game.ship.entities = Nil
   }
 }
 
@@ -92,9 +102,9 @@ object ModulePlan {
 
   def toTile(c: Char, module: ModuleType): Tile = {
     c match {
-      case '.' =>  new SimpleTile(' ', true, false, Color.LightGrey, Color.Black)
-      case '#' =>  new SimpleTile('+', false, true, module.skillType.color, Color.Black, module.activate)
-      case _ =>  new SimpleTile('#', false, false, module.skillType.color, Color.Black)
+      case '.' =>  new SimpleTile(' ', true, None, Color.LightGrey, Color.Black)
+      case '#' =>  new SimpleTile('+', false, Some(module), module.skillType.color, Color.Black, module.activate)
+      case _ =>  new SimpleTile('#', false, None, module.skillType.color, Color.Black)
     }
   }
 }

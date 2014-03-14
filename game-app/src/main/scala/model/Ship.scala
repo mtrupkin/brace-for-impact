@@ -158,6 +158,10 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
       false
     }
   }
+
+  def isOccupied(x: Int, y: Int): Boolean = {
+    !liveEntities.filter(e => (e.position.x == x) && (e.position.y == y) ).isEmpty
+  }
 }
 
 object ShipUtils {

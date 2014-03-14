@@ -21,6 +21,7 @@ trait Entity {
   def setPosition(p: Point)
   def movePosition(p: Point): Point
   def resetMovement()
+  def endMovement()
 }
 
 class BaseEntity(
@@ -35,7 +36,7 @@ class BaseEntity(
 
   def attack(other: Entity) {
     other.damage(1)
-    movement = -1
+    endMovement
   }
 
   def damage(value: Int) {
@@ -46,9 +47,9 @@ class BaseEntity(
     }
   }
 
-  def activate(ship:ShipPlan, p: Point) {
-    ship(p.x, p.y).activate(ship, this)
-    movement = -1
+  def activate(game:GameSequence, module:ModuleType, p: Point) {
+    game.ship(p.x, p.y).activate(game, module, this)
+    endMovement
   }
 
   def alive: Boolean = (stamina > 0)
@@ -57,9 +58,8 @@ class BaseEntity(
   def movePosition(p: Point): Point = { position = p.copy(); movement -= 1; position }
   def setPosition(p: Point) { position = p.copy() }
 
-  def resetMovement() {
-    movement = totalMovement
-  }
+  def resetMovement() = movement = totalMovement
+  def endMovement() { movement = -1 }
 }
 
 object Entity {

@@ -12,6 +12,7 @@ import org.flagship.console._
 import scala.Some
 import flagship.console.input.ConsoleKeyModifier
 import org.flagship.console.{Size, Point}
+import java.net.URL
 
 
 /**
@@ -30,6 +31,7 @@ trait Terminal {
   def close()
 }
 
+
 class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: String = "Swing Terminal") extends Frame with Terminal {
   val terminalCanvas = new TerminalCanvas(terminalSize)
   val normalTextFont = new Font("Courier New", Font.PLAIN, 14)
@@ -42,20 +44,18 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
   visible = true
   resizable = false
 
-
-
-  terminalCanvas.addKeyListener(new KeyAdapter {
+  class TerminalKeyAdapter extends KeyAdapter {
     override def keyPressed(e: KeyEvent) {
       val modifiers = new ConsoleKeyModifier(e.isShiftDown, e.isAltDown, e.isControlDown)
-      key = Some(new ConsoleKey( Key(e.getKeyCode),modifiers )) //keyQueue ++ Some(new ConsoleKey( Key(e.getKeyCode),modifiers ))
-//      println("key pressed")
+      key = Some(new ConsoleKey( Key(e.getKeyCode),modifiers ))
     }
 
-    override def keyReleased(e: KeyEvent) {
-      key = None
-//      println("key released")
-    }
-  })
+    override def keyReleased(e: KeyEvent) { key = None }
+  }
+
+  val keyListener = new TerminalKeyAdapter
+  peer.addKeyListener(keyListener)
+  terminalCanvas.addKeyListener(keyListener)
 
   val mouseAdapter = new MouseAdapter {
     override def mouseMoved(e: MouseEvent) {
@@ -88,6 +88,12 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
   }
 
   pack()
+
+  val url = ClassLoader.getSystemResource("icon.png")
+  val img = Toolkit.getDefaultToolkit().createImage(url)
+  peer.setIconImage(img)
+  peer.setLocationRelativeTo(null)
+
   terminalCanvas.createBufferStrategy(2)
 
   val charSize = terminalCanvas.charSize(terminalCanvas.getGraphics)

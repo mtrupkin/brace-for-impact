@@ -9,10 +9,11 @@ import flagship.console.terminal.Screen
  */
 class MessageView(val gameSequence: GameSequence) extends Control {
   def render(screen: Screen) {
-    if ( gameSequence.gameOver ) {
-      screen.clear()
-      screen.write(0, 0, "Game Over")
-      screen.write(0, 1, "Press Enter to Restart")
+
+    screen.clear()
+
+    for ((message, i) <- gameSequence.messages.zipWithIndex.take(dimension.height-2)) {
+      screen.write(0, i, message)
     }
   }
 }

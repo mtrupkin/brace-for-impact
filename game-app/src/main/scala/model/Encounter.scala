@@ -10,7 +10,9 @@ import flagship.console.terminal.Color
 object Encounter {
   import org.flagship.console.PointImplicits._
 
-  def createEncounter(ship: ShipPlan) {
+  def createEncounter(game: GameSequence) {
+
+    val ship = game.ship
     val pos = getRandomPosition(ship)
     val e = new BaseEntity("Spider", pos, char = 'S', color = Color.Red)
     ship.entities = e :: ship.entities

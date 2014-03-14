@@ -23,19 +23,19 @@ trait TileMap {
 trait Tile {
   def char: Char
   def move: Boolean
-  def activation: Boolean
+  def activation: Option[ModuleType]
   def fg: Color
   def bg: Color
-  def activate(shipPlan: ShipPlan, entity: Entity): Unit
+  def activate(game: GameSequence, m:ModuleType, entity: Entity): Unit
 }
 
 class SimpleTile(
   val char: Char,
   val move: Boolean = false,
-  val activation: Boolean = false,
+  val activation:  Option[ModuleType] = None,
   val fg: Color = Color.White,
   val bg: Color = Color.Black,
-  val onActivate: ((ShipPlan, Entity) => Unit) = (s: ShipPlan, e: Entity) => {} ) extends Tile {
-  def activate(shipPlan: ShipPlan, entity: Entity): Unit = onActivate(shipPlan, entity)
+  val onActivate: ((GameSequence, ModuleType, Entity) => Unit) = (game: GameSequence, m:ModuleType, e: Entity) => {} ) extends Tile {
+  def activate(game: GameSequence, m:ModuleType, entity: Entity): Unit = onActivate(game, m, entity)
 }
 

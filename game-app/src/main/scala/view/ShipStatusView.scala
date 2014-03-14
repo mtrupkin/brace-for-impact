@@ -13,12 +13,12 @@ class ShipStatusView(val game: GameSequence) extends Control {
 
   def render(screen: Screen) {
 
-    val status = if ( game.ship.liveEntities.isEmpty) "Green" else "Red"
+    val status = game.shipStatus.name
 
     screen.clear()
     screen.write(0, 0, "Starship")
     screen.write(0, 1, " Status: " + status)
-    screen.write(0, 2, "Shields: " + ship.hull)
+    screen.write(0, 2, "Shields: " + ship.shields)
     screen.write(0, 3, "   Hull: " + ship.hull)
   }
 }

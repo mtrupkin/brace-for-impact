@@ -11,6 +11,22 @@ object Encounter {
   import org.flagship.console.PointImplicits._
 
   def createEncounter(game: GameSequence) {
+    val roll = Rnd.roll(2)
+    roll match {
+      case 0 => spidersAttack(game)
+      case 1 => shipAttacks(game)
+    }
+  }
+
+
+  def getRandomPosition(ship: ShipPlan): (Int, Int) = {
+    val (module, modulePos) = ShipUtils.randomModule(ship)
+    val cell = ShipUtils.randomModuleCell(module)
+    ship.shipCoords(modulePos, cell)
+  }
+
+  def spidersAttack(game: GameSequence) {
+    game.addMessage("New Encounter: Spiders Attack")
 
     val ship = game.ship
     val pos = getRandomPosition(ship)
@@ -18,10 +34,12 @@ object Encounter {
     ship.entities = e :: ship.entities
   }
 
-  def getRandomPosition(ship: ShipPlan): (Int, Int) = {
-    val (module, modulePos) = ShipUtils.randomModule(ship)
-    val cell = ShipUtils.randomModuleCell(module)
-    ship.shipCoords(modulePos, cell)
+  def shipAttacks(game: GameSequence) {
+    game.addMessage("New Encounter: Ship Attack")
+
+    val ship = game.ship
+    val enemyShip = ShipPlan.ship2
+    game.enemyShip = Option(enemyShip)
 
   }
 }

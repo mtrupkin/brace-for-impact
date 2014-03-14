@@ -30,8 +30,13 @@ class GameSequence(
 
   def gameOverCondition = !player.alive || ship.destroyed
 
-  var phase: Int = 0
+  var numPhases: Int = 5
+  var phase: Int = numPhases
+  var round: Int = 0
   var step: PhaseStepType = PlayerAction
+
+  var enemyShip: Option[ShipPlan] = None
+
 
   def enemies: List[Entity] = ship.liveEntities
   def freeEnemies: List[Entity]  = enemies.filter(p => p.movement > 0)
@@ -73,16 +78,31 @@ class GameSequence(
     println("autoSteps")
     step match {
       case AllyAction => step = EnemyAction; true
-      case EndPhase => if (gameOverCondition) {gameOver(); false } else { step = PlayerAction; true }
+      case EndPhase => if (gameOverCondition) {gameOver(); false } else { endPhase(); true }
       case PlayerAction => false
       case EnemyAction => if( freeEnemies.isEmpty ) { step = EndPhase; true } else false
     }
   }
 
+  def endPhase() {
+    step = PlayerAction
+    phase = phase - 1
+
+    if (phase < 0) endRound()
+  }
+
+  def endRound() {
+    phase = numPhases
+    round = round + 1
+    for(s <- enemyShip) {
+      s.hull = s.hull - 1
+      ship.hull = ship.hull - 1
+    }
+  }
+
   def gameOver() {
     step = EndGame
-    addMessage("Game Over")
-    addMessage("Press Enter to Restart")
+    addMessage("Game Over.  Press Enter to restart.")
   }
 
   def addMessage(message:String) {
@@ -99,9 +119,6 @@ class GameSequence(
       }
     }
   }
-
-
-
 
   def enemyAction(e: Entity) {
     val path = pathFinder.findPath(null, e.position.x, e.position.y, player.position.x, player.position.y )

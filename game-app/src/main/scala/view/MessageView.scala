@@ -12,7 +12,7 @@ class MessageView(val gameSequence: GameSequence) extends Control {
 
     screen.clear()
 
-    for ((message, i) <- gameSequence.messages.zipWithIndex.take(dimension.height-2)) {
+    for ((message, i) <- gameSequence.messages.take(dimension.height-2).reverse.zipWithIndex) {
       screen.write(0, i, message)
     }
   }

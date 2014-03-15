@@ -25,12 +25,12 @@ class GameSequence(
   var messages: List[String] = Nil
 
   def shipStatus: ShipStatus = {
-    if (ship.liveEntities.isEmpty) ShipStatus.Green else ShipStatus.Red
+    if ((ship.liveEntities.isEmpty) && (enemyShip == None)) ShipStatus.Green else ShipStatus.Red
   }
 
   def gameOverCondition = !player.alive || ship.destroyed
 
-  var numPhases: Int = 5
+  var numPhases: Int = 7
   var phase: Int = numPhases
   var round: Int = 0
   var step: PhaseStepType = PlayerAction
@@ -43,7 +43,6 @@ class GameSequence(
   val pathFinder = new AStarPathFinder(new TileBasedMapWrapper(ship), 100, false, new ManhattanHeuristic(1))
 
   def move(dir: Point) {
-    println("move")
     if (step == PlayerAction) {
       val testPos = player.position.move(dir)
 
@@ -59,9 +58,17 @@ class GameSequence(
       }
 
       if (player.movement < 0) {
-        player.resetMovement()
         step = AllyAction
+        player.resetMovement()
       }
+    } else {
+      println("move skipped")
+    }
+  }
+
+  def endMovement() {
+    if (step == PlayerAction) {
+      step = AllyAction
     }
   }
 
@@ -75,7 +82,6 @@ class GameSequence(
   }
 
   def autoSteps(): Boolean = {
-    println("autoSteps")
     step match {
       case AllyAction => step = EnemyAction; true
       case EndPhase => if (gameOverCondition) {gameOver(); false } else { endPhase(); true }
@@ -84,20 +90,45 @@ class GameSequence(
     }
   }
 
-  def endPhase() {
-    step = PlayerAction
-    phase = phase - 1
+  def beginEncounter() {
+    ship.increaseShields(2)
+    beginRound()
+  }
 
-    if (phase < 0) endRound()
+  def endPhase() {
+    player.resetMovement()
+    step = PlayerAction
+
+    phase -= 1
+    if (phase <= 0) endRound()
+  }
+
+  def beginRound() {
+    player.resetMovement()
+    step = PlayerAction
+    phase = numPhases
+    round = round + 1
   }
 
   def endRound() {
-    phase = numPhases
-    round = round + 1
-    for(s <- enemyShip) {
-      s.hull = s.hull - 1
-      ship.hull = ship.hull - 1
+    for(e <- enemyShip) {
+      ship.attack(e)
+      e.attack(ship)
+
+      if (e.hull <= 0) {
+        enemyShipDestroyed()
+      }
     }
+
+    ship.endRound()
+
+    beginRound()
+  }
+
+  def enemyShipDestroyed() {
+    addMessage("Enemy ship destroyed.")
+    enemyShip = None
+    player.bitcoins += 1
   }
 
   def gameOver() {
@@ -110,7 +141,6 @@ class GameSequence(
   }
 
   def enemiesStep() {
-    println("enemiesStep")
     freeEnemies match {
       case e::es => enemyAction(e)
       case Nil => {
@@ -144,7 +174,7 @@ class GameSequence(
 object GameApp {
   def apply(): GameSequence = {
     val player = new Player
-    val ship = ShipPlan.ship1
+    val ship = ShipPlan.ship1(7, 7, 1, 1)
 
     val (x, y) = ship.startingPosition()
     player.setPosition(Point(x, y))

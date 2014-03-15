@@ -20,5 +20,7 @@ class ShipStatusView(val game: GameSequence) extends Control {
     screen.write(0, 1, " Status: " + status)
     screen.write(0, 2, "Shields: " + ship.shields)
     screen.write(0, 3, "   Hull: " + ship.hull)
+    screen.write(0, 4, "Weapons: " + ship.weapons)
+    screen.write(0, 5, "  Power: " + ship.power)
   }
 }

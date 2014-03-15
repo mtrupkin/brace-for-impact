@@ -7,7 +7,12 @@ import org.flagship.console.Point
 /**
  * Created by mtrupkin on 3/11/14.
  */
-class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
+class ShipPlan(modules: Array[Array[Option[ModulePlan]]], var hull: Int, var shields: Int, var weapons: Int, var power: Int) extends TileMap {
+  val maxHull = hull
+  val maxShields = shields
+  val maxWeapons = weapons
+  val maxPower = power
+
   val numModuleX = 7
   val numModuleY = 5
   val moduleWidth = 11
@@ -22,9 +27,43 @@ class ShipPlan(modules: Array[Array[Option[ModulePlan]]]) extends TileMap {
   val doorTile = new SimpleTile('.', true)
   val exteriorTile = new SimpleTile('#')
 
-  var hull = 6
-  var shields = 6
   def destroyed = hull <= 0
+
+  def attack(other: ShipPlan) {
+    other.damage(weapons)
+  }
+
+  def damage(amount: Int) {
+    val remaining = shields - amount
+    if (remaining < 0) {
+      shields = 0
+      hull += remaining
+    } else {
+      shields = remaining
+    }
+  }
+
+  def increaseShields(amount: Int) {
+    shields += amount
+    if (shields > maxShields) shields = maxShields
+  }
+
+  def increasePower(amount: Int) {
+    power += amount
+  }
+
+  def endRound() {
+    for((m, p) <- getModules()) {
+      m.module.status = ModuleStatus.Ready
+    }
+    power = maxPower
+    weapons = reduceToMax(weapons, maxWeapons)
+    shields = reduceToMax(shields, maxShields)
+  }
+
+  def reduceToMax(current: Int, max: Int): Int = {
+    if (current > max) max else current
+  }
 
   var entities : List[Entity] = List.empty
   def liveEntities: List[Entity] = entities.filter(_.alive)
@@ -181,7 +220,7 @@ object ShipUtils {
 }
 
 object ShipPlan {
-  def fromPlan(plan: String): ShipPlan = {
+  def fromPlan(plan: String, hull: Int, shields: Int, weapons: Int, power: Int): ShipPlan = {
     val modules = ofDim[Option[ModulePlan]](7, 5)
     val lines = plan.lines.zipWithIndex
 
@@ -193,7 +232,7 @@ object ShipPlan {
       }
     }
 
-    new ShipPlan(modules)
+    new ShipPlan(modules, hull, shields, weapons, power)
   }
 
   def toModulePlan(c: Char): Option[ModulePlan] = {
@@ -210,9 +249,9 @@ object ShipPlan {
     }
   }
 
-  val ship0 = fromPlan(ShipPlans.shipPlan0)
-  def ship1 = fromPlan(ShipPlans.shipPlan1)
-  val ship2 = fromPlan(ShipPlans.shipPlan2)
+  //val ship0 = fromPlan(ShipPlans.shipPlan0)
+  def ship1(hull: Int, shields: Int, weapons: Int, power: Int) = fromPlan(ShipPlans.shipPlan1, hull, shields, weapons, power)
+  def ship2(hull: Int, shields: Int, weapons: Int, power: Int) = fromPlan(ShipPlans.shipPlan2, hull, shields, weapons, power)
 }
 
 object ShipPlans {
@@ -224,11 +263,26 @@ object ShipPlans {
       |.......""".stripMargin
 
   val shipPlan1 =
+    """.......
+      |.dw....
+      |..PscH.
+      |.dw....
+      |.......""".stripMargin
+
+  val shipPlan1a =
     """.w.....
       |.ds....
-      |..cPtH.
+      |..tPcH.
       |.ds....
       |.w.....""".stripMargin
+
+  val shipPlan1b =
+    """.......
+      |..w....
+      |.dsPcH.
+      |..w....
+      |.......""".stripMargin
+
 
   val shipPlan2 =
     """www.w.w

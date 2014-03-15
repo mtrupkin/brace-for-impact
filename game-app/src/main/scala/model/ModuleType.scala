@@ -18,38 +18,90 @@ object SkillType {
   val None = SkillType("None", Color.LightGrey)
 }
 
+case class ModuleStatus(name: String)
+
+object ModuleStatus {
+  val Ready = ModuleStatus("Ready")
+  val Activated = ModuleStatus("Activated")
+  val Damaged = ModuleStatus("Damaged")
+}
 
 
 case class ModuleType(
   name: String,
   skillType: SkillType,
   activate: ((GameSequence, ModuleType, Entity) => Unit) =
-    (g: GameSequence, m:ModuleType, e: Entity) => {g.addMessage(s"${m.name} activated")})
+    (g: GameSequence, m:ModuleType, e: Entity) => ModuleType.activateModule(g, m)) {
+  var status: ModuleStatus = ModuleStatus.Ready
+}
+
 
 object ModuleType {
   import SkillType._
 
   //def Helm(ship: ShipPlan) = Module("Helm", Command, helmActivate)
   val Helm = ModuleType("Helm", Command, helmActivate)
-  val Cargo = ModuleType("Cargo", None)
-  val PowerPlant = ModuleType("PowerPlant", Engineer)
-  val HyperDrive = ModuleType("HyperDrive", Engineer)
+  val Cargo = ModuleType("Cargo", None, cargoActivate)
+  val PowerPlant = ModuleType("Power Plant", Engineer, powerPlantActivate)
+  val HyperDrive = ModuleType("Hyper Drive", Engineer)
   val Phasers = ModuleType("Phasers", Weapons, phaserActivate)
   val Sensors = ModuleType("Sensors", Science)
-  val Shields = ModuleType("Shields", Science)
+  val Shields = ModuleType("Shields", Science, shieldActivate)
   val Transporter = ModuleType("Transporter", Science)
 
-  def helmActivate(game: GameSequence,m:ModuleType, e: Entity) = {
-    if (game.shipStatus == ShipStatus.Green) {
-      Encounter.createEncounter(game)
+
+
+  def activateModule(game: GameSequence, module: ModuleType): Boolean = {
+    if (module.status == ModuleStatus.Activated) {
+      game.addMessage(s"${module.name} already activated.")
+      false
+    } else if (game.ship.power > 0) {
+      game.ship.power -= 1
+      game.addMessage(s"Activated ${module.name}.")
+      module.status = ModuleStatus.Activated
+      true
     } else {
-      game.addMessage("Cannot activate helm during RED ALERT.")
+      game.addMessage(s"${module.name} requires power to activate.")
+      false
     }
   }
 
-  def phaserActivate(game: GameSequence, m:ModuleType,e: Entity) = {
-    println("phaser activate")
-    game.ship.entities = Nil
+  def cargoActivate(game: GameSequence, m:ModuleType, e: Entity) = {
+    if (activateModule(game, m)) {
+      e.repairArmor(1)
+    }
+  }
+
+  def helmActivate(game: GameSequence, m:ModuleType, e: Entity) = {
+    if (game.shipStatus == ShipStatus.Green) {
+      game.addMessage("Hyper space jump activated.")
+      game.beginEncounter()
+      Encounter.createEncounter(game)
+    } else {
+      game.addMessage("Helm disabled during RED ALERT.")
+    }
+  }
+
+  def phaserActivate(game: GameSequence, m: ModuleType, e: Entity) = {
+    if (activateModule(game, m)) {
+      game.ship.weapons += 1
+    }
+  }
+
+  def powerPlantActivate(game: GameSequence, module: ModuleType, e: Entity) = {
+    if (module.status == ModuleStatus.Activated) {
+      game.addMessage(s"${module.name} already activated.")
+    } else  {
+      game.ship.power += 1
+      game.addMessage(s"Activated ${module.name}.")
+      module.status = ModuleStatus.Activated
+    }
+  }
+
+  def shieldActivate(game: GameSequence, m: ModuleType, e: Entity) = {
+    if (activateModule(game, m)) {
+      game.ship.increaseShields(1)
+    }
   }
 }
 
@@ -119,9 +171,16 @@ object Modules {
 
   val Cargo0 =
     """xx......xx
-      |x........x
+      |x..#..#..x
       |..........
-      |x........x
+      |x..#..#..x
+      |xx......xx""".stripMargin
+
+  val Cargo0a =
+    """xx......xx
+      |x...##...x
+      |..........
+      |x...##...x
       |xx......xx""".stripMargin
 
   val HyperDrive0 =
@@ -141,6 +200,13 @@ object Modules {
   val Phasers0 =
     """..........
       |..xxxx....
+      |...#xxxx..
+      |..xxxx....
+      |..........""".stripMargin
+
+  val Phasers0a =
+    """..........
+      |..xxxx....
       |...#xxxxxx
       |..xxxx....
       |..........""".stripMargin
@@ -155,7 +221,21 @@ object Modules {
   val Shields0 =
     """......xxxx
       |..xx...#xx
+      |..........
+      |..xx...#xx
+      |......xxxx""".stripMargin
+
+  val Shields0a =
+    """......xxxx
+      |..xx...#xx
       |..xxxxxxxx
+      |..xx...#xx
+      |......xxxx""".stripMargin
+
+  val Shields0b =
+    """......xxxx
+      |..xx...#xx
+      |..xx......
       |..xx...#xx
       |......xxxx""".stripMargin
 

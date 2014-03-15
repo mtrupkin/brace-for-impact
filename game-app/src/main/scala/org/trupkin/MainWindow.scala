@@ -4,21 +4,14 @@ import flagship.console.widget.{Border, Window}
 import model._
 import flagship.console.control.Composite
 import flagship.console.layout.{Layout, LayoutData, LayoutManager}
-import org.flagship.console.{Point, Size}
-import scala.Some
-import view.{MessageView, PlayerStatusView, ShipStatusView, MapView}
+import org.flagship.console.Point
+import view._
 import flagship.console.input.ConsoleKey
 import flagship.console.layout.LayoutData._
 import org.flagship.console.Size
 import scala.Some
-import org.newdawn.slick.util.pathfinding.AStarPathFinder
-import util.TileBasedMapWrapper
-import org.newdawn.slick.util.pathfinding.heuristics.ManhattanHeuristic
-import org.flagship.console.Size
 import scala.Some
-import model.GameApp._
 import org.flagship.console.Size
-import scala.Some
 
 /**
  * Created by mtrupkin on 3/8/14.
@@ -42,6 +35,9 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
     val mapPanel = new MapView(game) with Border
     val detailPanel = new Composite(LayoutManager.VERTICAL)
     val shipStatusPanel = new ShipStatusView(game) with Border {
+      override def minSize: Size = Size(40, 8)
+    }
+    val enemyShipPanel = new EnemyShipStatusView(game) with Border {
       override def minSize: Size = Size(40, 6)
     }
     val playerStatusPanel = new PlayerStatusView(game) with Border
@@ -51,9 +47,11 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
 
     detailPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
     shipStatusPanel.controlLayout = Layout(right = GRAB)
+    enemyShipPanel.controlLayout = Layout(right = GRAB)
     playerStatusPanel.controlLayout = Layout(bottom = GRAB, right = GRAB)
 
     detailPanel.addControl(shipStatusPanel)
+    detailPanel.addControl(enemyShipPanel)
     detailPanel.addControl(playerStatusPanel)
 
     topPanel.addControl(mapPanel)
@@ -77,6 +75,7 @@ class MainWindow(size: Size) extends Window(size, Some("Window")) {
       case A | Left => game.move(Point.Left)
       case S | Down => game.move(Point.Down)
       case D | Right => game.move(Point.Right)
+      case Space => game.endMovement()
       case Enter => accept()
       case Escape => closed = true
       case _ =>

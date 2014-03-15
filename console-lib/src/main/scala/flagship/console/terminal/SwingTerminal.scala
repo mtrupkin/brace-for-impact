@@ -59,9 +59,14 @@ class SwingTerminal(val terminalSize: Size = new Size(50, 20), windowTitle: Stri
 
   val mouseAdapter = new MouseAdapter {
     override def mouseMoved(e: MouseEvent) {
-      val x: Int = e.getX / charSize.width
-      val y: Int = e.getY / charSize.height
-      mouse = new Point(x, y)
+      Option(e) match {
+        case Some(x) => {
+          val x: Int = e.getX / charSize.width
+          val y: Int = e.getY / charSize.height
+          mouse = new Point(x, y)
+        }
+        case _ => {}
+      }
     }
 
     override def mouseClicked(e: MouseEvent) {

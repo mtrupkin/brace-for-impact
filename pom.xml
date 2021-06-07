@@ -97,10 +97,10 @@
 
         <!-- logging -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.13</version>
-        </dependency>
+  	    <groupId>ch.qos.logback</groupId>
+  	    <artifactId>logback-classic</artifactId>
+  	    <version>[1.2.0,)</version>
+	</dependency>
     </dependencies>
     </dependencyManagement>
 
